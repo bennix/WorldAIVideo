@@ -1,0 +1,12 @@
+node_modules/
+dist/
+release/
+*.log
+.DS_Store
+full_book.pdf
+.env
+.env.*
+*.p12
+*.p8
+*.key
+*.mobileprovision

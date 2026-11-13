@@ -1,0 +1,50 @@
+name: Build desktop packages
+on:
+  workflow_dispatch:
+  push:
+    tags: ['v*']
+permissions:
+  contents: read
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            platform: linux-x64
+            command: npm run dist:linux
+          - os: windows-2022
+            platform: windows-x64
+            command: npm run dist:win
+          - os: macos-15-intel
+            platform: mac-intel-unsigned
+            command: npm run build && npx electron-builder --mac zip --x64 --publish never
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install RPM packaging tools
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y rpm
+      - run: npm ci
+      - run: npm test
+      - name: Package
+        run: ${{ matrix.command }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}
+          path: |
+            release/*.deb
+            release/*.rpm
+            release/*.exe
+            release/*.zip
+          if-no-files-found: error
+          retention-days: 14
