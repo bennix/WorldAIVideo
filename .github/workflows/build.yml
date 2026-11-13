@@ -13,12 +13,15 @@ jobs:
         include:
           - os: ubuntu-24.04
             platform: linux-x64
+            executable: release/linux-unpacked/worldmodel-studio
             command: npm run dist:linux
           - os: windows-2022
             platform: windows-x64
+            executable: release/win-unpacked/WorldModel Studio.exe
             command: npm run dist:win
           - os: macos-15-intel
             platform: mac-intel-unsigned
+            executable: release/mac/WorldModel Studio.app/Contents/MacOS/WorldModel Studio
             command: npm run build && npx electron-builder --mac zip --x64 --publish never
     runs-on: ${{ matrix.os }}
     timeout-minutes: 45
@@ -33,11 +36,21 @@ jobs:
           cache: npm
       - name: Install RPM packaging tools
         if: runner.os == 'Linux'
-        run: sudo apt-get update && sudo apt-get install -y rpm
+        run: sudo apt-get update && sudo apt-get install -y rpm xvfb
       - run: npm ci
       - run: npm test
       - name: Package
         run: ${{ matrix.command }}
+      - name: Smoke test packaged application (Linux)
+        if: runner.os == 'Linux'
+        run: xvfb-run -a node tests/desktop-smoke.mjs
+        env:
+          DESKTOP_EXECUTABLE: ${{ matrix.executable }}
+      - name: Smoke test packaged application
+        if: runner.os != 'Linux'
+        run: node tests/desktop-smoke.mjs
+        env:
+          DESKTOP_EXECUTABLE: ${{ matrix.executable }}
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}
