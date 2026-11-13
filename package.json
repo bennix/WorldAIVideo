@@ -13,7 +13,8 @@
     "prepare:knowledge": "node scripts/extract-knowledge.mjs",
     "dist:linux": "npm run build && electron-builder --linux deb rpm --x64 --publish never",
     "dist:win": "npm run build && electron-builder --win nsis --x64 --publish never",
-    "dist:mac": "npm run build && electron-builder --mac dmg --publish never"
+    "dist:mac": "npm run build && electron-builder --mac dmg --publish never",
+    "landing:preview": "python3 -m http.server 4174 --directory landing"
   },
   "dependencies": {
     "lucide-react": "^0.468.0",

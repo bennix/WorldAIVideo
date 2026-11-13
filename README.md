@@ -60,3 +60,17 @@ Omni 1.2 允许 3–15 秒，原生 `response_format.duration` 采用 `"5s"` 字
 - https://github.com/google-gemini/cookbook/blob/main/quickstarts/Get_started_Omni.ipynb
 
 新增参数已完成请求格式和界面验证，付费媒体生成的新增比例、时长组合尚未逐项验证。
+
+## 下载与发布
+
+- 官网 https://bennix.github.io/WorldAIVideo/
+- 安装包 https://github.com/bennix/WorldAIVideo/releases/latest
+- 平台包为 macOS Apple Silicon / Intel DMG、Windows x64 安装向导、Linux x64 DEB / RPM。
+- macOS 发布包使用 Developer ID 签名、Apple 公证及 stapler 票据验证。
+- Windows 安装包当前使用未签名发行，源码内保留 Windows 打包配置。
+
+GitHub Actions 的 `Build desktop packages` 工作流在平台原生运行器上打包，并实际启动应用验证内置知识和 PDF 原生解析、封面生成。Intel Mac 构建结果在本机 Developer ID 签名及公证后生成 DMG 发布。
+
+本机复用钥匙串配置时，可设置 `APPLE_KEYCHAIN_PROFILE=WorldAIVideo-notary` 后执行 `npm run dist:mac`。凭据保存在本机钥匙串。最新已公证 Apple Silicon DMG 保留于 `release/WorldModel-Studio-Latest-mac-arm64.dmg`。
+
+Landing Page 源码位于 `landing/`，运行 `npm run landing:preview` 本地预览。页面使用应用截图和本机生成的 15 秒视频示例，支持中文、英文和日文。GitHub Pages 由 `Publish landing page` 工作流发布。
